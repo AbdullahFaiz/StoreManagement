@@ -25,8 +25,6 @@ export default function ProductsCreate() {
       } else {
         console.log("success");
         router.push('/'); 
-        // revalidatePath('/')
-        // redirect('/');
       }
     } catch (error: unknown) {
       console.error(error);

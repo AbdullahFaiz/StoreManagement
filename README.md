@@ -17,8 +17,6 @@ Getting Started:
     Push Prisma Schema to Database:
         `npx prisma db push`
     
-    Seed Database:
-        `npx prisma db seed`
 
 4. Start development server: 
         `npm run dev`

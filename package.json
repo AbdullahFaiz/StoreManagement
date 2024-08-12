@@ -1,6 +1,10 @@
 {
   "name": "store",
   "version": "0.1.0",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -25,6 +29,7 @@
     "postcss": "^8",
     "prisma": "^5.18.0",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

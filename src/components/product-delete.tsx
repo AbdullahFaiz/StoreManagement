@@ -1,25 +1,76 @@
-// this is a client component, because we need to use client-side feature
 'use client'
 
-// Importing the function to delete products.
-import { deleteProduct } from "@/app/actions/products"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { deleteProduct } from '@/app/actions/products';
 
-// Define the props that the ProductDelete component expects.
 interface ProductDeleteProps {
-    id: string, // The ID of the product to delete.
+  id: string; 
 }
 
 export default function ProductDelete({ id }: ProductDeleteProps) {
-    // Define the action to perform when the form is submitted.
-    // This is how we do it if we omit the bind from the server action
-    const deleteAction = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); // Prevent the form from being submitted in the traditional way.
-        deleteProduct(id); // Delete the product with the given ID.
-    };
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-    // Render a form with a single submit button. When the button is clicked, the form is submitted 
-    // and the deleteAction is performed.
-    return <form onSubmit={deleteAction}>
-        <button type="submit" className="text-sm opacity-30 text-red-500">Delete</button>
-    </form>
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await deleteProduct(id);
+      router.push('/');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    setShowConfirmModal(false);
+    handleDelete();
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+  };
+
+  const handleDeleteClick = () => {
+    setShowConfirmModal(true);
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2 ml-2 px-4 disabled:opacity-50"
+        onClick={handleDeleteClick}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Deleting...' : 'Delete'}
+      </button>
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md">
+            <p>Are you sure you want to delete this product?</p>
+            <div className="flex justify-end mr-4 ml-4 px-4">
+              <button
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                onClick={handleConfirmDelete}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Deleting...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

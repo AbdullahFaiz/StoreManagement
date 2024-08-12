@@ -1,11 +1,11 @@
-// This is a client component
+
 'use client'
 
 import { useState, useEffect } from "react";
 import { updateProduct } from "@/app/actions/products";
 import ProductForm from "@/components/product-form";
 import { fetchProductById } from "@/db/queries/products";
-import { Product } from "@prisma/client"; // Import the Product type
+import { Product } from "@prisma/client"; 
 import { getProductById, getProducts } from "@/repositories/productRepository";
 import { useRouter } from 'next/navigation';
 
@@ -49,36 +49,36 @@ export default function ProductsEdit({ params }: ProductsEditProps) {
         fetchProduct();
     }, [id]);
 
+    const [formErrors, setFormErrors] = useState({});
+  
     const handleUpdate = async (formData: FormData) => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            // Create a formState object with an empty errors property
-            
-
-            // Call updateProduct with three parameters
-            const formState = await updateProduct(id, { errors: {} }, formData);
-            if (formState) {
-                router.push('/'); // Redirect on success
-              } else {
-                setError('Product update failed'); // Handle unsuccessful update
-              }
-            // Optionally handle success, e.g., redirect or show a success message
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('Something went wrong');
-            }
-        } finally {
-            setTimeout(() => {
-                setIsLoading(false);
-              }, 1000);
+      setIsLoading(true);
+      setFormErrors({});
+  
+      try {
+        const formState = await updateProduct(id, { errors: {} }, formData);
+        console.log("formState.errors");
+        console.log(formState.errors);
+        if (Object.keys(formState.errors).length > 0) {
+          setFormErrors(formState.errors); 
+          console.log("errors");
+        } else {
+          console.log("success");
+          router.push('/'); 
+          // revalidatePath('/')
+          // redirect('/');
         }
+      } catch (error: unknown) {
+        console.error(error);
+        setFormErrors({ _form: ['Something went wrong'] });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    if (isLoading) return <div className="flex justify-center items-center h-full">
-    <div className="loader"></div> {/* Your loading spinner or indicator */}
+
+    if (isLoading) return <div className="flex justify-center items-center h-full w-full">
+    <div className="loader h-full w-full"></div>
 </div>;
 
     if (error) return <p className="text-red-500">{error}</p>;
@@ -96,6 +96,7 @@ export default function ProductsEdit({ params }: ProductsEditProps) {
                             cost: product.cost.toString(), 
                             price: product.price.toString() 
                         }} 
+                        errors={formErrors} 
                     />
             </div>
         </main>

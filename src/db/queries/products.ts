@@ -1,8 +1,8 @@
-import type { Product } from '@prisma/client' // Importing the Product type from the Prisma client library.
+import type { Product } from '@prisma/client' 
 import { db } from '@/db'
-import { notFound } from 'next/navigation' // Importing the notFound function from Next.js for handling 404 errors.
+import { notFound } from 'next/navigation'
 
-export async function fetchProducts(): Promise<Product[]> {  // Function to fetch all products from the database.
+export async function fetchProducts(): Promise<Product[]> {  
     return await db.product.findMany({
         orderBy: [
             {
@@ -12,7 +12,7 @@ export async function fetchProducts(): Promise<Product[]> {  // Function to fetc
     })
 }
 
-export async function fetchProductById(id: string): Promise<Product | null> { // Function to fetch a single product by its ID.
+export async function fetchProductById(id: string): Promise<Product | null> { 
     const product = await db.product.findFirst({
         where: {
             id
@@ -20,7 +20,7 @@ export async function fetchProductById(id: string): Promise<Product | null> { //
     })
 
     if (!product) {
-        notFound() // If the product is not found, a 404 error is thrown.
+        notFound() 
     }
 
     return product

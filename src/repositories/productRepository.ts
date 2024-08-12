@@ -1,15 +1,7 @@
 import { PrismaClient, Product } from '@prisma/client';
 const prisma = new PrismaClient();
-console.log("client");
-  console.log("client");
 export const getProducts = async (): Promise<Product[]> => {
-  console.log("prisma");
-  console.log("prisma");
-  console.log("prisma");
   const products = await prisma.product.findMany();
-  console.log("products prisma get",products);
-  console.log(products);
-
   return products;
 };
 

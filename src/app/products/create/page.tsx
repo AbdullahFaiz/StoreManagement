@@ -1,58 +1,63 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import ProductForm from "@/components/product-form"
-import { createProduct } from "@/app/actions/products"
+import { useState } from 'react';
+import ProductForm from '@/components/product-form';
+import { createProduct } from '@/app/actions/products';
+import { redirect, useRouter } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
-// Define the functional component
 export default function ProductsCreate() {
-    const [isLoading, setIsLoading] = useState(false) // State to track loading status
-    const [error, setError] = useState<string | null>(null) // State to track errors
+  const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const router = useRouter();
 
-    // Handle form submission
-    const handleFormSubmit = async (formData: FormData) => {
-        setIsLoading(true) // Set loading state to true
-        setError(null) // Reset error state
+  const handleFormSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    setFormErrors({});
 
-        try {
-            // Create a product and handle form validation errors
-            await createProduct({ errors: {} }, formData)
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message) // Set the error message if available
-            } else {
-                setError('Something went wrong') // Fallback error message
-            }
-        } finally {
-            setIsLoading(false) // Reset loading state
-        }
+    try {
+      const formState = await createProduct({ errors: {} }, formData);
+      console.log("formState.errors");
+      console.log(formState.errors);
+      if (Object.keys(formState.errors).length > 0) {
+        setFormErrors(formState.errors); 
+        console.log("errors");
+      } else {
+        console.log("success");
+        router.push('/'); 
+        // revalidatePath('/')
+        // redirect('/');
+      }
+    } catch (error: unknown) {
+      console.error(error);
+      setFormErrors({ _form: ['Something went wrong'] });
+    } finally {
+      setIsLoading(false);
     }
-    if (isLoading) return <div className="flex justify-center items-center h-full">
-        <div className="loader"></div> {/* Your loading spinner or indicator */}
-    </div>;
-    
+  };
+
+  if (isLoading) {
     return (
-        <main className="flex min-h-screen flex-col items-start p-10">
-            <div className="w-full">
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
-                        <div className="loader"></div> {/* Your loading spinner or indicator */}
-                    </div>
-                ) : (
-                    <div>
-                        {error && <p className="text-red-500">{error}</p>} {/* Display any error message */}
-                        <ProductForm
-                            formAction={handleFormSubmit} // Use the formAction handler
-                            initialData={{
-                                name: '',
-                                description: '',
-                                cost: '',
-                                price: ''
-                            }}
-                        />
-                    </div>
-                )}
-            </div>
-        </main>
-    )
+      <div className="flex justify-center items-center h-full">
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-start p-10">
+      <div className="w-full">
+        <ProductForm
+          formAction={handleFormSubmit}
+          initialData={{
+            name: '',
+            description: '',
+            cost: '',
+            price: '',
+          }}
+          errors={formErrors} 
+        />
+      </div>
+    </main>
+  );
 }

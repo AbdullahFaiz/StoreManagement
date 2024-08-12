@@ -4,7 +4,20 @@ export const getProducts = async (): Promise<Product[]> => {
   const products = await prisma.product.findMany();
   return products;
 };
+export async function getProductsByName(searchQuery?: string) {
+  const products = await prisma.product.findMany({
+    where: searchQuery
+      ? {
+          name: {
+            contains: searchQuery,
+            mode: "insensitive",
+          },
+        }
+      : {},
+  });
 
+  return products;
+}
 export const getProductById = async (id: any): Promise<Product | null> => {
   const product = await prisma.product.findUnique({ where: { id } });
   return product;

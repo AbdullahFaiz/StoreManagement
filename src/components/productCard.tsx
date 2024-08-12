@@ -1,7 +1,7 @@
 
 import { Product } from '@prisma/client';
 import Link from 'next/link';
-import tempImage from '@/assets/sample.png'
+import tempImage from '@/assets/sample.jpg'
 import Image from 'next/image';
 import ProductDelete from './product-delete';
 

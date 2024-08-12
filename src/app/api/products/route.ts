@@ -9,10 +9,3 @@ export async function GET() {
     return Response.json({ res })
 
 }
-
-export async function POST(req: NextApiRequest, res: NextApiResponse<Product>) {
-  const newProduct = req.body as Omit<Product, 'id'>;
-  const createdProduct = await createProduct(newProduct);
-  
-  return Response.json({ createdProduct })
-}
